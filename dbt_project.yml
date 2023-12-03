@@ -37,3 +37,6 @@ models:
     gold:
       +schema: gold
       +materialized: table
+    work:
+      +schema: work
+      +materialized: ephemeral
