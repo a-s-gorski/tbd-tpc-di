@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+  - name: finwire
+    database: digen
+    loader: tpcdi.py
+
+    tables:
+      - name: cmp
+      - name: sec
+      - name: fin

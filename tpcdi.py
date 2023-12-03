@@ -15,9 +15,9 @@ def get_session():
         .appName("TBD-TPC-DI-setup") \
         .enableHiveSupport() \
         .getOrCreate()
-    for db in ['bronze','silver', 'gold']:
+    for db in ['digen', 'bronze', 'silver', 'gold']:
         session.sql(f"CREATE DATABASE IF NOT EXISTS {db} LOCATION 'hdfs:///user/hive/warehouse/{db}.db'")
-    session.sql('USE bronze')
+    session.sql('USE digen')
     return session
 
 
@@ -230,7 +230,6 @@ def process_files(
             )
 
         )
-        df.printSchema()
         save_df(df, 'customer_mgmt')
 
     con_file_name = 'TaxRate.txt'
