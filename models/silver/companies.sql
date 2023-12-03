@@ -20,8 +20,7 @@ select
                 partition by cik
                 order by
                 pts desc
-            ) - INTERVAL 1 milliseconds
-        ,
+            ) - INTERVAL 1 milliseconds,
         to_timestamp('9999-12-31 23:59:59.999')
     ) as end_timestamp,
     CASE
