@@ -1,6 +1,6 @@
 with s1 as (
     select *,
-    to_number(co_name_or_cik) as try_cik
+    try_to_number(co_name_or_cik, '9999999999') as try_cik
     from {{ source("finwire", "sec") }}
 )
 select  
@@ -10,7 +10,7 @@ select
     status,
     name,
     ex_id,
-    to_number(sh_out) as sh_out,
+    to_number(sh_out, '9999999999') as sh_out,
     to_date(first_trade_date,'yyyymmdd') as first_trade_date,
     to_date(first_exchange_date,'yyyymmdd') as first_exchange_date,
     cast(dividend as float) as dividend,
