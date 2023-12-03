@@ -1,6 +1,6 @@
 with s1 as (
     select *,
-    try_to_number(co_name_or_cik) as try_cik
+    to_number(co_name_or_cik) as try_cik
     from {{ source("finwire", "sec") }}
 )
 select  
