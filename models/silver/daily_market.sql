@@ -31,10 +31,9 @@ with
             and a.fifty_two_week_high = c.dm_high
             and c.dm_date between add_months(a.dm_date, -12) and a.dm_date
     )
-select *
-from s2
-qualify
-    row_number() over (
+
+SELECT * FROM (
+  SELECT *, row_number() over (
         partition by dm_s_symb, dm_date
         order by fifty_two_week_low_date, fifty_two_week_high_date
-    ) = 1
+    )rank FROM s2) tmp WHERE rank = 1
