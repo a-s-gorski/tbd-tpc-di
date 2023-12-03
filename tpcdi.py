@@ -7,7 +7,7 @@ from typing_extensions import Annotated
 from pathlib import Path
 from google.cloud import storage
 
-app = typer.Typer(help="A utility for loading TPC-DI generated files into Lakehouse.")
+app = typer.Typer(help="A utility for loading TPC-DI generated files into Data Lakehouse.")
 
 
 def get_session():
@@ -113,49 +113,6 @@ def process_files(
 
         save_df(df, table_name)
 
-    # Simplifies the DataFrame transformations for retrieving XML elements
-    # def get_xml_element(
-    #         column: str,
-    #         element: str,
-    #         datatype: str,
-    #         with_alias: bool = True
-    # ):
-    #     new_element = get(xmlget(col(column), lit(element)), lit('$')).cast(datatype)
-    #     # alias needs to be optional
-    #     return (
-    #         new_element.alias(element) if with_alias else new_element
-    #     )
-
-    # Simplifies the DataFrame transformations for retrieving XML attributes
-    # def get_xml_attribute(
-    #         column: str,
-    #         attribute: str,
-    #         datatype: str,
-    #         with_alias: bool = True
-    # ):
-    #     new_attribute = get(col(column), lit(f"@{attribute}")).cast(datatype)
-    #     # alias needs to be optional
-    #     return (
-    #         new_attribute.alias(attribute) if with_alias else new_attribute
-    #     )
-
-    # Simplifies the logic for constructing a phone number from multiple nested fields
-    # def get_phone_number(
-    #         phone_id: str,
-    #         separator: str = '-'
-    # ):
-    #     return concat(
-    #         get_xml_element(f"phone{phone_id}", 'C_CTRY_CODE', 'STRING', False),
-    #         when(get_xml_element(f"phone{phone_id}", 'C_CTRY_CODE', 'STRING', False) == '', '').otherwise(separator),
-    #         get_xml_element(f"phone{phone_id}", 'C_AREA_CODE', 'STRING', False),
-    #         when(get_xml_element(f"phone{phone_id}", 'C_AREA_CODE', 'STRING', False) == '', '').otherwise(separator),
-    #         get_xml_element(f"phone{phone_id}", 'C_LOCAL', 'STRING', False),
-    #         when(get_xml_element(f"phone{phone_id}", 'C_EXT', 'STRING', False) == '', '').otherwise(" ext: "),
-    #         get_xml_element(f"phone{phone_id}", 'C_EXT', 'STRING', False)
-    #     ).alias(f"c_phone_{phone_id}")
-
-    ### Start defining and loading the actual tables
-    ### Variable 'con_file_name' declaration acts as the comment.
 
     con_file_name = 'Date.txt'
     if file_name in ['all', con_file_name]:
@@ -230,72 +187,51 @@ def process_files(
         ])
         load_csv(schema, con_file_name, 'prospect')
 
-    # con_file_name = 'CustomerMgmt.xml'
-    # if file_name in ['all', con_file_name]:
-    #     upload_files(con_file_name, get_stage_path(stage, con_file_name))
-    #
-    #     # this might get hairy
-    #     df = (
-    #         session
-    #         .read
-    #         .option('STRIP_OUTER_ELEMENT', True)  # Strips the TPCDI:Actions element
-    #         .xml(get_stage_path(stage, con_file_name))
-    #         .select(
-    #             # flatten out all of the nested elements
-    #             xmlget(col('$1'), lit('Customer'), 0).alias('customer'),
-    #             xmlget(col('customer'), lit('Name'), 0).alias('name'),
-    #             xmlget(col('customer'), lit('Address'), 0).alias('address'),
-    #             xmlget(col('customer'), lit('ContactInfo'), 0).alias('contact_info'),
-    #             xmlget(col('contact_info'), lit('C_PHONE_1')).alias('phone1'),
-    #             xmlget(col('contact_info'), lit('C_PHONE_2')).alias('phone2'),
-    #             xmlget(col('contact_info'), lit('C_PHONE_3')).alias('phone3'),
-    #             xmlget(col('customer'), lit('TaxInfo'), 0).alias('tax_info'),
-    #             xmlget(col('customer'), lit('Account'), 0).alias('account'),
-    #             # get the Action attributes
-    #             get_xml_attribute('$1', 'ActionType', 'STRING'),
-    #             get_xml_attribute('$1', 'ActionTS', 'STRING'),
-    #         )
-    #         .select(
-    #             # Handling Action attributes
-    #             to_timestamp(col('ActionTs'), lit('yyyy-mm-ddThh:mi:ss')).alias('action_ts'),
-    #             col('ActionType').alias('ACTION_TYPE'),
-    #             # Get Customer Attributes
-    #             get_xml_attribute('customer', 'C_ID', 'NUMBER'),
-    #             get_xml_attribute('customer', 'C_TAX_ID', 'STRING'),
-    #             get_xml_attribute('customer', 'C_GNDR', 'STRING'),
-    #             cast(get_xml_attribute('customer', 'C_TIER', 'STRING', False), 'NUMBER').alias('c_tier'),
-    #             get_xml_attribute('customer', 'C_DOB', 'DATE'),
-    #             # Get Name elements
-    #             get_xml_element('name', 'C_L_NAME', 'STRING'),
-    #             get_xml_element('name', 'C_F_NAME', 'STRING'),
-    #             get_xml_element('name', 'C_M_NAME', 'STRING'),
-    #             # Get Address elements
-    #             get_xml_element('address', 'C_ADLINE1', 'STRING'),
-    #             get_xml_element('address', 'C_ADLINE2', 'STRING'),
-    #             get_xml_element('address', 'C_ZIPCODE', 'STRING'),
-    #             get_xml_element('address', 'C_CITY', 'STRING'),
-    #             get_xml_element('address', 'C_STATE_PROV', 'STRING'),
-    #             get_xml_element('address', 'C_CTRY', 'STRING'),
-    #             # Get Contact Info elements
-    #             get_xml_element('contact_info', 'C_PRIM_EMAIL', 'STRING'),
-    #             get_xml_element('contact_info', 'C_ALT_EMAIL', 'STRING'),
-    #             # Contruct phone numbers from multi-nested elements
-    #             get_phone_number('1'),
-    #             get_phone_number('2'),
-    #             get_phone_number('3'),
-    #             # Get TaxInfo elements
-    #             get_xml_element('tax_info', 'C_LCL_TX_ID', 'STRING'),
-    #             get_xml_element('tax_info', 'C_NAT_TX_ID', 'STRING'),
-    #             # Get Account Attributes
-    #             get_xml_attribute('account', 'CA_ID', 'STRING'),
-    #             get_xml_attribute('account', 'CA_TAX_ST', 'NUMBER'),
-    #             # Get Account elements
-    #             get_xml_element('account', 'CA_B_ID', 'NUMBER'),
-    #             get_xml_element('account', 'CA_NAME', 'STRING'),
-    #         )
-    #     )
-    #
-    #     save_df(df, 'customer_mgmt')
+    con_file_name = 'CustomerMgmt.xml'
+    if file_name in ['all', con_file_name]:
+        upload_files(con_file_name, stage)
+
+        # this might get hairy
+        df = (
+            session
+            .read
+            .format('xml')
+            # .option('STRIP_OUTER_ELEMENT', True)  # Strips the TPCDI:Actions element
+            .options(rowTag='TPCDI:Action')
+            .load(get_stage_path(stage, con_file_name))
+            .select(
+                to_timestamp('_ActionTS', 'yyyy-mm-ddThh:mi:ss').alias('action_ts'),
+                col('_ActionType').alias('action_type'),
+                col('Customer._C_ID').alias('c_id'),
+                col('Customer._C_TAX_ID').alias('c_tax_id'),
+                col('Customer._C_GNDR').alias('c_gndr'),
+                col('Customer._C_TIER').alias('c_tier'),
+                col('Customer._C_DOB').alias('c_dob'),
+                col('Customer.Name.C_L_NAME'),
+                col('Customer.Name.C_F_NAME'),
+                col('Customer.Name.C_M_NAME'),
+                col('Customer.Address.C_ADLINE1'),
+                col('Customer.Address.C_ADLINE2'),
+                col('Customer.Address.C_ZIPCODE'),
+                col('Customer.Address.C_CITY'),
+                col('Customer.Address.C_STATE_PROV'),
+                col('Customer.Address.C_CTRY'),
+                col('Customer.ContactInfo.C_PRIM_EMAIL'),
+                col('Customer.ContactInfo.C_ALT_EMAIL'),
+                col('Customer.ContactInfo.C_PHONE_1'),
+                col('Customer.ContactInfo.C_PHONE_2'),
+                col('Customer.ContactInfo.C_PHONE_3'),
+                col('Customer.TaxInfo.C_LCL_TX_ID'),
+                col('Customer.TaxInfo.C_NAT_TX_ID'),
+                col('Customer.Account._CA_ID').alias('ca_id'),
+                col('Customer.Account._CA_TAX_ST').alias('ca_tax_st'),
+                col('Customer.Account.CA_B_ID'),
+                col('Customer.Account.CA_NAME')
+            )
+
+        )
+        df.printSchema()
+        save_df(df, 'customer_mgmt')
 
     con_file_name = 'TaxRate.txt'
     if file_name in ['all', con_file_name]:
@@ -417,7 +353,7 @@ def process_files(
             .option('delimiter', '|')
             .csv(stage_path)
             .withColumn('rec_type', substring('line', 16, 3))
-            .withColumn('pts', to_timestamp(substring('line', 0, 15), 'yyyymmdd-hhmmss'))
+            .withColumn('pts', to_timestamp(substring('line', 0, 15), 'yyyyMMdd-HHmmss')) #20101231-100058
             .createOrReplaceTempView("finwire")
         )
 
