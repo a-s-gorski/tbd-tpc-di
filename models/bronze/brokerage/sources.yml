@@ -2,7 +2,7 @@ version: 2
 
 sources:
   - name: brokerage
-    database: digen
+    schema: digen
     loader: tpcdi.py
 
     tables:

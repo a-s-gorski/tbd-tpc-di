@@ -2,7 +2,7 @@ version: 2
 
 sources:
   - name: hr
-    database: digen
+    schema: digen
     loader: tpcdi.py
 
     tables:

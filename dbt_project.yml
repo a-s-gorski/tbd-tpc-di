@@ -29,11 +29,11 @@ clean-targets:         # directories to be removed by `dbt clean`
 models:
   dbt_tpcdi:
     bronze:
-      +database: bronze
+      +schema: bronze
       +materialized: table
     silver:
-      +database: silver
+      +schema: silver
       +materialized: table
     gold:
-      +database: gold
+      +schema: gold
       +materialized: table

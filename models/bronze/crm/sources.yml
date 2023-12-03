@@ -2,7 +2,7 @@ version: 2
 
 sources:
   - name: crm
-    database: digen
+    schema: digen
     loader: tpcdi.py
 
     tables:
