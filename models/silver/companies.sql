@@ -15,22 +15,20 @@ select
     founding_date,
     sp_rating,
     pts as effective_timestamp,
-    ifnull(
-        timestampadd(
-            'millisecond',
-            -1,
+     ifnull(
             lag(pts) over (
-                partition by company_id
+                partition by cik
                 order by
                 pts desc
             )
-        ),
+
+        ,
         to_timestamp('9999-12-31 23:59:59.999')
     ) as end_timestamp,
     CASE
         WHEN (
             row_number() over (
-                partition by company_id
+                partition by cik
                 order by
                 pts desc
             ) = 1
