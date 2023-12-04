@@ -28,15 +28,11 @@ with s1 as (
 select
     *,
     ifnull(
-        timestampadd(
-        'millisecond',
-        -1,
         lag(effective_timestamp) over (
             partition by company_id
             order by
             effective_timestamp desc
-        )
-        ),
+        ) - INTERVAL 1 milliseconds,
         to_timestamp('9999-12-31 23:59:59.999')
     ) as end_timestamp,
     CASE

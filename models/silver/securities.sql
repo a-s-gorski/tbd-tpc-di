@@ -16,15 +16,11 @@ select
     coalesce(c1.company_id, c2.company_id) company_id,
     pts as effective_timestamp,
     ifnull(
-        timestampadd(
-        'millisecond',
-        -1,
         lag(pts) over (
             partition by symbol
             order by
             pts desc
-        )
-        ),
+        ) - INTERVAL 1 milliseconds,
         to_timestamp('9999-12-31 23:59:59.999')
     ) as end_timestamp,
     CASE
