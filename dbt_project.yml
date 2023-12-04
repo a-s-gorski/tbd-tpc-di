@@ -27,16 +27,16 @@ clean-targets:         # directories to be removed by `dbt clean`
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
 
 models:
-  dbt_tpcdi:
+  tbd_tpcdi:
     bronze:
-      +schema: bronze
+      +database: bronze
       +materialized: table
     silver:
-      +schema: silver
+      +database: silver
       +materialized: table
     gold:
-      +schema: gold
+      +database: gold
       +materialized: table
     work:
-      +schema: work
+      +database: work
       +materialized: ephemeral
