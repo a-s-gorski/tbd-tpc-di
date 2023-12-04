@@ -30,7 +30,7 @@ s2 as (
         min(placed_timestamp) placed_timestamp, 
         max(removed_timestamp) removed_timestamp
     from s1
-    group by all
+    group by customer_id, symbol, company_id, company_name, exchange_id, security_status
 )
 select 
     *,
