@@ -9,5 +9,5 @@ select
     sum(amount) amount,
     description
 from s1
-group by all
+group by sk_customer_id, sk_account_id, sk_transaction_date, description
 order by sk_transaction_date, sk_customer_id, sk_account_id
