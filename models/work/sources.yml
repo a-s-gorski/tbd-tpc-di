@@ -1,0 +1,19 @@
+version: 2
+
+sources:
+  - name: silver
+    schema: glue_catalog.silver_ice
+    loader: tpcdi.py
+
+    tables:
+      - name: accounts
+      - name: employees
+      - name: customers
+      - name: date
+      - name: securities
+      - name: trades_history
+      - name: cash_transactions
+      - name: holdings_history
+      - name: daily_market
+      - name: trades
+      - name: watches
