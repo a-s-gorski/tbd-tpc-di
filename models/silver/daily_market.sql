@@ -24,12 +24,12 @@ with
             s1 b
             on a.dm_s_symb = b.dm_s_symb
             and a.fifty_two_week_low = b.dm_low
-            and b.dm_date between add_months(a.dm_date, -12) and a.dm_date
+            and b.dm_date <= a.dm_date
         join
             s1 c
             on a.dm_s_symb = c.dm_s_symb
             and a.fifty_two_week_high = c.dm_high
-            and c.dm_date between add_months(a.dm_date, -12) and a.dm_date
+            and c.dm_date <= a.dm_date
     )
 
 SELECT * FROM (

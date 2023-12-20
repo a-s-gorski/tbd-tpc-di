@@ -13,15 +13,8 @@ tbd_tpcdi:
         "spark.driver.port": "30000"
         "spark.blockManager.port": "30001"
         "spark.driver.host": "10.11.0.5"
-        "spark.driver.bindAddress": "0.0.0.0"
+        "spark.driver.bindAddress": "0.0.0.0" #FIXME: create a command to get it
         "spark.driver.memory": "2g"
         "spark.executor.memory": "4g"
         "spark.executor.instances": "2"
         "spark.hadoop.hive.metastore.warehouse.dir": "hdfs:///user/hive/warehouse/"
-
-#
-#        --conf spark.driver.port=29010 \
-#        --conf spark.blockManager.port=29011 \
-#        --conf spark.kubernetes.namespace=default \
-#        --conf spark.driver.host=jupyter-service-$JUPYTERHUB_USER \
-#        --conf spark.driver.bindAddress=$HOSTNAME \
