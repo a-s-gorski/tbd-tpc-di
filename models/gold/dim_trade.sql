@@ -1,5 +1,11 @@
-select 
-    {{dbt_utils.generate_surrogate_key(['trade_id','t.effective_timestamp'])}} sk_trade_id,
+{{ config(
+    materialized='table',
+    iceberg_expire_snapshots='False',
+    incremental_strategy="append",
+    file_format='iceberg'
+) }}
+select
+   md5(cast(concat(coalesce(cast(trade_id as STRING), '_dbt_utils_surrogate_key_null_'), '-', coalesce(cast(t.effective_timestamp as STRING), '_dbt_utils_surrogate_key_null_')) as STRING)) sk_trade_id,
     trade_id,
     trade_status status,
     transaction_type,
@@ -9,5 +15,5 @@ select
     t.end_timestamp,
     t.IS_CURRENT
 from
-    {{ ref('trades_history') }} t
+    {{ source('silver', 'trades_history') }} t
     

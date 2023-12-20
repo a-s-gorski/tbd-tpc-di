@@ -1,3 +1,9 @@
+{{ config(
+    materialized='table',
+    iceberg_expire_snapshots='False',
+    incremental_strategy="append",
+    file_format='iceberg'
+) }}
 with
     s1 as (
         select
@@ -13,7 +19,7 @@ with
                 rows between 364 preceding and 0 following  -- CURRENT ROW
             ) fifty_two_week_high,
             *
-        from {{ ref("brokerage_daily_market") }}
+        from {{  source('bronze', 'brokerage_daily_market') }}
     ),
     s2 as (
         select a.*, 

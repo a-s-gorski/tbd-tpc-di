@@ -1,3 +1,9 @@
+{{ config(
+    materialized='table',
+    iceberg_expire_snapshots='False',
+    incremental_strategy="append",
+    file_format='iceberg'
+) }}
 select
     action_type,
     decode(action_type,
@@ -52,13 +58,13 @@ select
         ELSE FALSE
     END as IS_CURRENT
 from
-    {{ ref('crm_customer_mgmt') }} c
+    {{  source('bronze','crm_customer_mgmt') }} c
 left join
-    {{ ref('reference_tax_rate') }} ntx
+    {{  source('bronze', 'reference_tax_rate') }} ntx
 on
     c.c_nat_tx_id = ntx.tx_id
 left join
-    {{ ref('reference_tax_rate') }} ltx
+    {{  source('bronze' ,'reference_tax_rate') }} ltx
 on
     c.c_lcl_tx_id = ltx.tx_id
 where action_type in ('NEW', 'INACT', 'UPDCUST')

@@ -6,21 +6,22 @@ sources:
     loader: tpcdi.py
 
     tables:
-      - name: crm_customer_mgmt
-      - name: reference_tax_rate
-      - name: brokerage_cash_transaction
+      - name: syndicated_prospect
+
+  - name: silver
+    schema: glue_catalog.silver_ice
+    loader: tpcdi.py
+
+    tables:
       - name: accounts
-      - name: finwire_company
-      - name: finwire_financial
-      - name: finwire_security
-      - name: bronze.finwire_security
-      - name: reference_status_type
-      - name: reference_trade_type
-      - name: reference_industry
-      - name: reference_date
-      - name: hr_employee
-      - name: brokerage_holding_history
-      - name: brokerage_trade
-      - name: brokerage_trade_history
-      - name: brokerage_daily_market
-      - name: brokerage_watch_history
+      - name: employees
+      - name: customers
+      - name: date
+      - name: securities
+      - name: trades_history
+      - name: cash_transactions
+      - name: holdings_history
+      - name: daily_market
+      - name: trades
+      - name: watches
+      - name: companies

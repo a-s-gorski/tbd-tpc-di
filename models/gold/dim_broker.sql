@@ -1,5 +1,11 @@
+{{ config(
+    materialized='table',
+    iceberg_expire_snapshots='False',
+    incremental_strategy="append",
+    file_format='iceberg'
+) }}
 select
-    {{dbt_utils.generate_surrogate_key(['employee_id'])}} sk_broker_id,
+    md5(cast(concat(coalesce(cast(employee_id as STRING), '_dbt_utils_surrogate_key_null_')) as STRING))  sk_broker_id,
     employee_id broker_id,
     manager_id,
     first_name,
@@ -10,4 +16,4 @@ select
     office,
     phone
 from
-    {{ ref('employees') }}
+    {{ source('silver','employees') }}

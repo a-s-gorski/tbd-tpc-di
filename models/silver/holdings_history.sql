@@ -1,10 +1,16 @@
+{{ config(
+    materialized='table',
+    iceberg_expire_snapshots='False',
+    incremental_strategy="append",
+    file_format='iceberg'
+) }}
 with s1 as (
     select
         HH_T_ID trade_id,
         HH_H_T_ID previous_trade_id,
         hh_before_qty previous_quantity,
         hh_after_qty quantity
-    from {{ ref('brokerage_holding_history') }}
+    from {{ source('bronze','brokerage_holding_history') }}
 )
 select s1.*,
        ct.account_id account_id,

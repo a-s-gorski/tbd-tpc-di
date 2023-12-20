@@ -1,3 +1,9 @@
+{{ config(
+    materialized='table',
+    iceberg_expire_snapshots='False',
+    incremental_strategy="append",
+    file_format='iceberg'
+) }}
 select
     DATE_VALUE SK_DATE_ID,
 	DATE_VALUE,

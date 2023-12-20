@@ -1,3 +1,9 @@
+{{ config(
+    materialized='table',
+    iceberg_expire_snapshots='False',
+    incremental_strategy="append",
+    file_format='iceberg'
+) }}
 select
     sk_customer_id,
     sk_security_id,
@@ -5,7 +11,7 @@ select
     to_date(removed_timestamp) sk_date_removed,
     1 as watch_cnt
 from 
-    {{ ref('watches') }} w
+    {{ source('silver', 'watches') }} w
 join
     {{ ref('dim_customer') }} c
 ON

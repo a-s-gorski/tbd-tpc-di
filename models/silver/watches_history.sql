@@ -1,4 +1,9 @@
-
+{{ config(
+    materialized='table',
+    iceberg_expire_snapshots='False',
+    incremental_strategy="append",
+    file_format='iceberg'
+) }}
 with s1 as (
     select
         w_c_id customer_id,
@@ -9,7 +14,7 @@ with s1 as (
         when 'CNCL' then 'Cancelled'
         else null end action_type
     from
-        {{ ref('brokerage_watch_history') }}
+        {{ source('bronze','brokerage_watch_history') }}
 )
 select 
     s1.*,

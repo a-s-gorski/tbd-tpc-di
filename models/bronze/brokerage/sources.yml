@@ -4,7 +4,6 @@ sources:
   - name: brokerage
     schema: digen
     loader: tpcdi.py
-
     tables:
       - name: daily_market
       - name: watch_history

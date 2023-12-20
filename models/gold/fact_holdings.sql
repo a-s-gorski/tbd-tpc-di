@@ -1,7 +1,13 @@
+{{ config(
+    materialized='table',
+    iceberg_expire_snapshots='False',
+    incremental_strategy="append",
+    file_format='iceberg'
+) }}
 with s1 as (
     select 
         *
-    from {{ ref('holdings_history') }}
+    from {{ source('silver','holdings_history') }}
 )
 select
     ct.sk_trade_id sk_current_trade_id,

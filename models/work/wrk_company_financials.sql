@@ -7,7 +7,7 @@ select
         order by QUARTER_START_DATE
         rows between 4 preceding and current row
     ) - eps sum_basic_eps
-from {{ ref("financials") }} f
+from {{ source('silver', 'financials') }} f
 join {{ ref("dim_company") }} c 
 on f.company_id = c.company_id
 and f.effective_timestamp between c.effective_timestamp and c.end_timestamp

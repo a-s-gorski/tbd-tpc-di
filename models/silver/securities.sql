@@ -1,3 +1,9 @@
+{{ config(
+    materialized='table',
+    iceberg_expire_snapshots='False',
+    incremental_strategy="append",
+    file_format='iceberg'
+) }}
 select
     symbol,
     issue_type,
@@ -33,7 +39,7 @@ select
         ) THEN TRUE
         ELSE FALSE
     END as IS_CURRENT
-from {{ ref('finwire_security') }} s 
+from {{ source('bronze','finwire_security') }} s
 left join {{ ref('companies') }} c1
 on s.cik = c1.company_id
 and pts between c1.effective_timestamp and c1.end_timestamp

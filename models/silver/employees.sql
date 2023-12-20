@@ -1,4 +1,10 @@
-select 
+{{ config(
+    materialized='table',
+    iceberg_expire_snapshots='False',
+    incremental_strategy="append",
+    file_format='iceberg'
+) }}
+select
     employee_id,
     manager_id,
     employee_first_name first_name,
@@ -8,4 +14,4 @@ select
     employee_branch branch,
     employee_office office,
     employee_phone phone
-from {{ ref('hr_employee') }}
+from {{ source('bronze','hr_employee') }}

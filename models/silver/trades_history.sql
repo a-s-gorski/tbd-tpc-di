@@ -1,3 +1,9 @@
+{{ config(
+    materialized='table',
+    iceberg_expire_snapshots='False',
+    incremental_strategy="append",
+    file_format='iceberg'
+) }}
 select
     t_id trade_id,
     t_dts trade_timestamp,
@@ -37,19 +43,19 @@ select
         ELSE FALSE
     END as IS_CURRENT
 from
-    {{ ref('brokerage_trade') }} 
+    {{source('bronze','brokerage_trade') }}
 join
-    {{ ref('brokerage_trade_history') }}  
+    {{ source('bronze','brokerage_trade_history') }}
 on
     t_id = th_t_id
 join
-    {{ ref('reference_trade_type') }} 
+    {{ source('bronze','reference_trade_type') }}
 on
     t_tt_id = tt_id
 join
-    {{ ref('reference_status_type') }} ts
+    {{ source('bronze','reference_status_type') }} ts
 on
     t_st_id = ts.st_id
 join
-    {{ ref('reference_status_type') }} us
+    {{ source('bronze','reference_status_type') }} us
 on th_st_id = us.st_id

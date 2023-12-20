@@ -1,3 +1,9 @@
+{{ config(
+    materialized='table',
+    iceberg_expire_snapshots='False',
+    incremental_strategy="append",
+    file_format='iceberg'
+) }}
 with s1 as (
     select
         symbol,
@@ -14,7 +20,7 @@ with s1 as (
         s.end_timestamp,
         s.IS_CURRENT
     from
-        {{ ref("securities") }} s
+        {{ source('silver', 'securities') }} s
     join
         {{ ref("dim_company") }} c
     on 
@@ -23,7 +29,7 @@ with s1 as (
         s.effective_timestamp between c.effective_timestamp and c.end_timestamp
 )
 select
-    {{dbt_utils.generate_surrogate_key(['symbol','effective_timestamp'])}} sk_security_id,
+     md5(cast(concat(coalesce(cast(symbol as STRING), '_dbt_utils_surrogate_key_null_'), '-', coalesce(cast(effective_timestamp as STRING), '_dbt_utils_surrogate_key_null_')) as STRING)) sk_security_id,
     *
 from
     s1

@@ -1,9 +1,15 @@
+{{ config(
+    materialized='table',
+    iceberg_expire_snapshots='False',
+    incremental_strategy="append",
+    file_format='iceberg'
+) }}
 with s1 as (
     select
         *,
         to_date(transaction_timestamp) sk_transaction_date
     from
-        {{ ref('cash_transactions') }}
+        {{ source('silver','cash_transactions') }}
 )
 select
     sk_customer_id,

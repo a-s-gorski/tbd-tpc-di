@@ -1,4 +1,9 @@
-
+{{ config(
+    materialized='table',
+    iceberg_expire_snapshots='False',
+    incremental_strategy="append",
+    file_format='iceberg'
+) }}
 select
     cik as company_id,
     st.st_name status,
@@ -33,6 +38,6 @@ select
         ) THEN TRUE
         ELSE FALSE
     END as IS_CURRENT
-from {{ ref("finwire_company") }} cmp
-join {{ ref("reference_status_type") }} st on cmp.status = st.st_id
-join {{ ref("reference_industry") }} ind on cmp.industry_id = ind.in_id
+from {{  source('bronze',"finwire_company") }} cmp
+join {{  source('bronze',"reference_status_type") }} st on cmp.status = st.st_id
+join {{  source('bronze',"reference_industry") }} ind on cmp.industry_id = ind.in_id

@@ -1,5 +1,11 @@
+{{ config(
+    materialized='table',
+    iceberg_expire_snapshots='False',
+    incremental_strategy="append",
+    file_format='iceberg'
+) }}
 select
-    {{dbt_utils.generate_surrogate_key(['company_id','effective_timestamp'])}} sk_company_id,
+    md5(cast(concat(coalesce(cast(company_id as STRING), '_dbt_utils_surrogate_key_null_'), '-', coalesce(cast(effective_timestamp as STRING), '_dbt_utils_surrogate_key_null_')) as STRING)) sk_company_id,
     company_id,
     status,
     name,
@@ -36,4 +42,4 @@ select
     effective_timestamp,
     end_timestamp,
     is_current
-from {{ ref("companies") }}
+from {{ source('silver', 'companies') }}

@@ -1,3 +1,9 @@
+{{ config(
+    materialized='table',
+    iceberg_expire_snapshots='False',
+    incremental_strategy="append",
+    file_format='iceberg'
+) }}
 with t as (
     select
         ct_ca_id account_id,
@@ -5,7 +11,7 @@ with t as (
         ct_amt amount,
         ct_name description
     from
-        {{ ref('brokerage_cash_transaction') }}
+        {{  source('bronze','brokerage_cash_transaction') }}
 )
 select
     a.customer_id,

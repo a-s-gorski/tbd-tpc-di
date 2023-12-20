@@ -1,15 +1,21 @@
+{{ config(
+    materialized='table',
+    iceberg_expire_snapshots='False',
+    incremental_strategy="append",
+    file_format='iceberg'
+) }}
 with s1 as (
     select c.*,
            p.agency_id,
            p.credit_rating,
            p.net_worth
-    FROM {{ ref('customers') }} c
-    left join {{ ref('syndicated_prospect') }} p
+    FROM {{ source('silver','customers') }} c
+    left join {{ source('bronze','syndicated_prospect') }} p
     using (first_name, last_name, postal_code, address_line1, address_line2)
 ),
 s2 as (
     SELECT
-        {{dbt_utils.generate_surrogate_key(['customer_id','effective_timestamp'])}} sk_customer_id,
+        md5(cast(concat(coalesce(cast(customer_id as STRING), '_dbt_utils_surrogate_key_null_'), '-', coalesce(cast(effective_timestamp as STRING), '_dbt_utils_surrogate_key_null_')) as STRING))  sk_customer_id,
         customer_id,
         coalesce(tax_id, last_value(tax_id) IGNORE NULLS OVER (
             PARTITION BY customer_id

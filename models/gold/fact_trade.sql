@@ -1,3 +1,9 @@
+{{ config(
+    materialized='table',
+    iceberg_expire_snapshots='False',
+    incremental_strategy="append",
+    file_format='iceberg'
+) }}
 select
     sk_trade_id,
     sk_broker_id,
@@ -15,7 +21,7 @@ select
     fee,
     commission,
     tax
-from {{ ref('trades') }} t
+from {{ source('silver','trades') }} t
 join {{ ref('dim_trade') }} dt
 on t.trade_id = dt.trade_id
 and t.create_timestamp between dt.effective_timestamp and dt.end_timestamp
