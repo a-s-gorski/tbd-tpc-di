@@ -10,4 +10,4 @@ select
 from {{ ref("financials") }} f
 join {{ ref("dim_company") }} c 
 on f.company_id = c.company_id
-and f.effective_timestamp between c.effective_timestamp and c.end_timestamp
+and <= c.end_timestamp
