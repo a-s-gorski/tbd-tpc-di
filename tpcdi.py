@@ -431,6 +431,7 @@ def process_files(
         )
 
         save_df(df, 'fin')
+        session.stop()
 
 
 if __name__ == "__main__":
