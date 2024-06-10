@@ -15,6 +15,6 @@ tbd_tpcdi:
         "spark.driver.host": "10.11.0.3"  #FIXME: Result of the command (kubectl get nodes -o json |  jq -r '.items[0].status.addresses[0].address')
         "spark.driver.bindAddress": "0.0.0.0"
         "spark.driver.memory": "2g"
-        "spark.executor.memory": "4g"
+        "spark.executor.memory": "2g"
         "spark.executor.instances": "2"
         "spark.hadoop.hive.metastore.warehouse.dir": "hdfs:///user/hive/warehouse/"
